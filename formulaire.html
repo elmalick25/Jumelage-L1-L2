@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription Jumelage L1 × L2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent3: #43e97b;
+    --text: #e8e8f0;
+    --muted: #7a7a9a;
+    --l1: #ff6584;
+    --l2: #6c63ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .glow { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+  .glow-1 { width: 500px; height: 500px; background: rgba(108,99,255,.12); top: -150px; left: -100px; }
+  .glow-2 { width: 400px; height: 400px; background: rgba(255,101,132,.08); bottom: -100px; right: -100px; }
+
+  .container { position: relative; z-index: 1; width: 100%; max-width: 480px; animation: fadeUp .6s ease both; }
+
+  .header { text-align: center; margin-bottom: 32px; }
+  .logo-line { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
+  .promo-badge { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; padding: 5px 16px; border-radius: 10px; }
+  .badge-l1 { background: rgba(255,101,132,.15); color: var(--l1); border: 1.5px solid rgba(255,101,132,.3); }
+  .badge-l2 { background: rgba(108,99,255,.15); color: var(--l2); border: 1.5px solid rgba(108,99,255,.3); }
+  h1 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1.5px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 36px; }
+
+  .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  input { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color .2s, box-shadow .2s; width: 100%; }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
+  input::placeholder { color: var(--muted); opacity: .5; }
+  input.error { border-color: var(--l1); box-shadow: 0 0 0 3px rgba(255,101,132,.15); }
+  .error-msg { font-size: 12px; color: var(--l1); display: none; }
+  .error-msg.show { display: block; }
+
+  .radio-group { display: flex; gap: 10px; }
+  .radio-opt { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border); cursor: pointer; transition: all .2s; font-size: 14px; font-weight: 500; user-select: none; }
+  .radio-opt input[type=radio] { display: none; }
+  .radio-opt.l1-opt:has(input:checked) { border-color: var(--l1); background: rgba(255,101,132,.1); color: var(--l1); }
+  .radio-opt.l2-opt:has(input:checked) { border-color: var(--l2); background: rgba(108,99,255,.1); color: var(--l2); }
+
+  .btn-submit { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--accent); color: #fff; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-submit:hover { background: #7c74ff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,.4); }
+  .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Spinner */
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-screen { display: none; text-align: center; padding: 10px 0; }
+  .success-icon { font-size: 60px; margin-bottom: 14px; animation: bounceIn .5s ease; }
+  .success-screen h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--accent3); }
+  .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+  .btn-new { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .btn-new:hover { border-color: var(--muted); }
+
+  .footer-note { text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Alerte erreur réseau */
+  .alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; display: none; line-height: 1.5; }
+  .alert.show { display: block; }
+  .alert-error { background: rgba(255,101,132,.1); border: 1px solid rgba(255,101,132,.3); color: var(--l1); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bounceIn { 0% { transform: scale(0); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+</style>
+</head>
+<body>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-line">
+      <span class="promo-badge badge-l1">L1</span>
+      <span style="color:var(--muted);font-size:20px">⟷</span>
+      <span class="promo-badge badge-l2">L2</span>
+    </div>
+    <h1>Inscription au Jumelage</h1>
+    <p class="subtitle">Remplis ce formulaire pour participer au programme de jumelage entre promos.</p>
+  </div>
+
+  <div class="card">
+    <!-- ALERTE ERREUR -->
+    <div class="alert alert-error" id="alertError">
+      ❌ Une erreur est survenue. Vérifie ta connexion et réessaie.
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div id="formContent">
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="nom" placeholder="Ex : Diallo" autocomplete="family-name">
+        <span class="error-msg" id="err-nom">Veuillez saisir votre nom.</span>
+      </div>
+      <div class="field">
+        <label>Prénom</label>
+        <input type="text" id="prenom" placeholder="Ex : Aminata" autocomplete="given-name">
+        <span class="error-msg" id="err-prenom">Veuillez saisir votre prénom.</span>
+      </div>
+      <div class="field">
+        <label>Numéro de téléphone</label>
+        <input type="tel" id="telephone" placeholder="Ex : 77 123 45 67" autocomplete="tel">
+        <span class="error-msg" id="err-tel">Veuillez saisir un numéro valide (min. 8 chiffres).</span>
+      </div>
+      <div class="field">
+        <label>Votre niveau</label>
+        <div class="radio-group">
+          <label class="radio-opt l1-opt">
+            <input type="radio" name="niveau" value="L1" checked> 🎓 Licence 1
+          </label>
+          <label class="radio-opt l2-opt">
+            <input type="radio" name="niveau" value="L2"> 🎓 Licence 2
+          </label>
+        </div>
+      </div>
+      <button class="btn-submit" id="submitBtn" onclick="soumettre()">
+        ✨ S'inscrire au jumelage
+      </button>
+    </div>
+
+    <!-- SUCCÈS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">🎉</div>
+      <h2>Inscription confirmée !</h2>
+      <p id="successMsg">Tu es bien inscrit(e) au programme de jumelage.</p>
+      <button class="btn-new" onclick="nouvelleInscription()">+ Inscrire un autre étudiant</button>
+    </div>
+  </div>
+
+  <p class="footer-note">Tes données sont uniquement utilisées pour le jumelage.<br>Programme organisé par la Commission Sociale — Club Informatique.</p>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHOPejlHwDUZpwW-EVEIy41pGOoscB4qs",
+    authDomain: "jumelage-l1-l2.firebaseapp.com",
+    databaseURL: "https://jumelage-l1-l2-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "jumelage-l1-l2",
+    storageBucket: "jumelage-l1-l2.firebasestorage.app",
+    messagingSenderId: "374198147269",
+    appId: "1:374198147269:web:66542058a905bf952df8ac"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Rendre accessible globalement
+  window._firebasePush = async (etudiant) => {
+    const dbRef = ref(db, 'etudiants');
+    await push(dbRef, etudiant);
+  };
+</script>
+
+<script>
+  function valider() {
+    let ok = true;
+    const nom = document.getElementById('nom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const tel = document.getElementById('telephone').value.trim();
+    const telDigits = tel.replace(/\D/g, '');
+
+    document.getElementById('nom').classList.toggle('error', !nom);
+    document.getElementById('err-nom').classList.toggle('show', !nom);
+    if (!nom) ok = false;
+
+    document.getElementById('prenom').classList.toggle('error', !prenom);
+    document.getElementById('err-prenom').classList.toggle('show', !prenom);
+    if (!prenom) ok = false;
+
+    const telOk = telDigits.length >= 8;
+    document.getElementById('telephone').classList.toggle('error', !telOk);
+    document.getElementById('err-tel').classList.toggle('show', !telOk);
+    if (!telOk) ok = false;
+
+    return ok;
+  }
+
+  async function soumettre() {
+    if (!valider()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Envoi en cours...';
+    document.getElementById('alertError').classList.remove('show');
+
+    const etudiant = {
+      nom: document.getElementById('nom').value.trim(),
+      prenom: document.getElementById('prenom').value.trim(),
+      telephone: document.getElementById('telephone').value.trim(),
+      niveau: document.querySelector('input[name="niveau"]:checked').value,
+      date: new Date().toLocaleString('fr-FR')
+    };
+
+    try {
+      await window._firebasePush(etudiant);
+      const prenom = etudiant.prenom;
+      document.getElementById('successMsg').textContent =
+        `${prenom}, tu es bien inscrit(e) en ${etudiant.niveau}. Tu seras contacté(e) dès que les paires seront formées. 📲`;
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+    } catch(e) {
+      document.getElementById('alertError').classList.add('show');
+      btn.disabled = false;
+      btn.innerHTML = '✨ S\'inscrire au jumelage';
+    }
+  }
+
+  function nouvelleInscription() {
+    ['nom','prenom','telephone'].forEach(id => {
+      document.getElementById(id).value = '';
+      document.getElementById(id).classList.remove('error');
+    });
+    document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+    document.querySelector('input[name="niveau"][value="L1"]').checked = true;
+    document.getElementById('formContent').style.display = 'block';
+    document.getElementById('successScreen').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').innerHTML = '✨ S\'inscrire au jumelage';
+  }
+
+  ['nom','prenom','telephone'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('error');
+      const errId = id === 'telephone' ? 'err-tel' : 'err-' + id;
+      document.getElementById(errId).classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>

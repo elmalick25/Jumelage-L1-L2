@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Jumelage L1 × L2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #13131a; --card: #1a1a24; --border: #2a2a3a;
+    --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
+    --text: #e8e8f0; --muted: #7a7a9a; --l1: #ff6584; --l2: #6c63ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(108,99,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .glow { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+  .glow-1 { width: 500px; height: 500px; background: rgba(108,99,255,.12); top: -150px; left: -100px; }
+  .glow-2 { width: 400px; height: 400px; background: rgba(255,101,132,.08); bottom: -100px; right: -100px; }
+
+  /* LOGIN */
+  #loginScreen { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+  .login-box { position: relative; z-index: 1; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 400px; text-align: center; animation: fadeUp .5s ease; }
+  .lock-icon { font-size: 48px; margin-bottom: 16px; }
+  .login-box h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+  .login-box p { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+  .login-field { position: relative; margin-bottom: 12px; }
+  .login-field input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 48px 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color .2s, box-shadow .2s; letter-spacing: 3px; text-align: center; }
+  .login-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
+  .login-field input.shake { animation: shake .3s ease; border-color: var(--l1); }
+  .toggle-pwd { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; }
+  .login-error { color: var(--l1); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
+  .btn-login { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .btn-login:hover { background: #7c74ff; box-shadow: 0 8px 24px rgba(108,99,255,.4); }
+  .login-hint { margin-top: 16px; font-size: 12px; color: var(--muted); }
+
+  /* MAIN */
+  #mainApp { display: none; }
+  .topbar { position: sticky; top: 0; z-index: 100; background: rgba(10,10,15,.9); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; align-items: center; gap: 16px; }
+  .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex: 1; }
+  .admin-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(108,99,255,.2); color: var(--accent); font-weight: 600; }
+
+  /* Indicateur temps réel */
+  .live-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--accent3); background: rgba(67,233,123,.1); border: 1px solid rgba(67,233,123,.2); padding: 4px 10px; border-radius: 20px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); animation: pulse 1.5s infinite; }
+
+  .btn-logout { background: rgba(255,101,132,.12); border: 1px solid rgba(255,101,132,.2); color: var(--l1); padding: 7px 14px; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s; }
+  .btn-logout:hover { background: rgba(255,101,132,.2); }
+
+  .wrapper { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  .tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 6px; gap: 6px; margin-bottom: 28px; }
+  .tab { flex: 1; padding: 12px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .tab.active { background: var(--card); color: var(--text); box-shadow: 0 2px 12px rgba(0,0,0,.4); }
+
+  .panel { display: none; animation: fadeUp .4s ease both; }
+  .panel.active { display: block; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 18px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+
+  .students-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .level-header { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .count-chip { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+
+  .student-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface); margin-bottom: 6px; font-size: 13px; animation: fadeUp .3s ease both; transition: background .15s; }
+  .student-item:hover { background: #20202e; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+  .avatar-l1 { background: rgba(255,101,132,.2); color: var(--l1); }
+  .avatar-l2 { background: rgba(108,99,255,.2); color: var(--l2); }
+  .student-name { font-weight: 500; }
+  .student-phone { font-size: 11px; color: var(--muted); }
+  .student-date { font-size: 10px; color: var(--muted); opacity: .7; }
+  .btn-del { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 6px; border-radius: 6px; transition: all .15s; flex-shrink: 0; }
+  .btn-del:hover { color: var(--l1); background: rgba(255,101,132,.1); }
+  .empty-state { text-align: center; color: var(--muted); font-size: 14px; padding: 32px 0; }
+  .scrollable { max-height: 380px; overflow-y: auto; padding-right: 4px; }
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  input[type=text], input[type=url], textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; width: 100%; }
+  input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .5; }
+
+  .btn { padding: 11px 22px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #7c74ff; transform: translateY(-1px); }
+  .btn-success { background: var(--accent3); color: #000; }
+  .btn-success:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-danger { background: rgba(255,101,132,.15); color: var(--l1); border: 1px solid rgba(255,101,132,.3); }
+  .btn-danger:hover { background: rgba(255,101,132,.25); }
+  .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .btn:active { transform: scale(.98); }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+  .pair-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; animation: fadeUp .4s ease both; transition: border-color .2s; }
+  .pair-card:hover { border-color: rgba(108,99,255,.3); }
+  .pair-number { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; color: var(--muted); width: 28px; text-align: center; flex-shrink: 0; }
+  .pair-students { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap; }
+  .pair-student { display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 10px; padding: 8px 12px; flex: 1; min-width: 140px; }
+  .pair-name { font-size: 13px; font-weight: 500; }
+  .pair-contact { font-size: 11px; }
+  .unmatched-note { background: rgba(255,101,132,.08); border: 1px solid rgba(255,101,132,.2); border-radius: 10px; padding: 14px; font-size: 13px; color: var(--l1); margin-top: 12px; line-height: 1.6; }
+  .info-box { background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.2); border-radius: 12px; padding: 14px; font-size: 13px; color: #a8a0ff; line-height: 1.6; margin-bottom: 16px; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,.5); animation: slideIn .3s ease; min-width: 260px; }
+  .toast.success { border-color: rgba(67,233,123,.3); }
+  .toast.error { border-color: rgba(255,101,132,.3); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+
+  @media (max-width: 600px) {
+    .students-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .card { padding: 18px 14px; }
+    .topbar { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="glow glow-1"></div>
+  <div class="login-box">
+    <div class="lock-icon">🔐</div>
+    <h2>Espace Administrateur</h2>
+    <p>Réservé à l'administration.<br>Saisissez votre mot de passe.</p>
+    <div class="login-field">
+      <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') connexion()">
+      <button class="toggle-pwd" onclick="togglePwd()">👁</button>
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-login" onclick="connexion()">Accéder →</button>
+    <p class="login-hint">Mot de passe par défaut : <strong>admin2024</strong></p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <div class="topbar">
+    <div class="topbar-title">
+      🔗 Jumelage L1 × L2
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span> Temps réel
+    </div>
+    <button class="btn-logout" onclick="deconnexion()">Déconnexion</button>
+  </div>
+
+  <div class="wrapper">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('etudiants')">👥 Étudiants</button>
+      <button class="tab" onclick="switchTab('jumelage')">🔗 Jumelage</button>
+      <button class="tab" onclick="switchTab('parametres')">⚙️ Paramètres</button>
+    </div>
+
+    <!-- ÉTUDIANTS -->
+    <div class="panel active" id="panel-etudiants">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0</div>
+          <div class="stat-label">Total inscrits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-l1" style="color:var(--l1)">0</div>
+          <div class="stat-label">Étudiants L1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-l2" style="color:var(--l2)">0</div>
+          <div class="stat-label">Étudiants L2</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="dot" style="background:var(--accent)"></div>
+          Liste des étudiants inscrits
+          <div style="margin-left:auto;display:flex;gap:10px;">
+            <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="exporterEtudiants()">📤 Export CSV</button>
+            <button class="btn btn-danger" style="padding:7px 12px;font-size:12px;" onclick="viderListe()">🗑 Vider</button>
+          </div>
+        </div>
+        <div class="students-grid">
+          <div>
+            <div class="level-header" style="color:var(--l1)">Licence 1 <span class="count-chip" id="chip-l1" style="background:rgba(255,101,132,.15);color:var(--l1)">0</span></div>
+            <div class="scrollable" id="list-l1"><div class="empty-state">Chargement…</div></div>
+          </div>
+          <div>
+            <div class="level-header" style="color:var(--l2)">Licence 2 <span class="count-chip" id="chip-l2" style="background:rgba(108,99,255,.15);color:var(--l2)">0</span></div>
+            <div class="scrollable" id="list-l2"><div class="empty-state">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JUMELAGE -->
+    <div class="panel" id="panel-jumelage">
+      <div class="card">
+        <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Lancer le Jumelage</div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px;">Associe chaque L1 avec un L2 de façon aléatoire. Les étudiants sans binôme sont signalés.</p>
+        <div class="btn-row">
+          <button class="btn btn-success" onclick="lancerJumelage()" style="font-size:15px;padding:14px 26px;">🔗 Lancer le Jumelage</button>
+          <button class="btn btn-ghost" onclick="exporterJumelage()">📤 Exporter CSV</button>
+          <button class="btn btn-danger" onclick="reinitJumelage()">🔄 Réinitialiser</button>
+        </div>
+      </div>
+      <div id="jumelage-results" style="display:none;">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-value" id="pairs-count" style="color:var(--accent3)">0</div><div class="stat-label">Paires créées</div></div>
+          <div class="stat-card"><div class="stat-value" id="unmatched-l1" style="color:var(--l1)">0</div><div class="stat-label">L1 sans binôme</div></div>
+          <div class="stat-card"><div class="stat-value" id="unmatched-l2" style="color:var(--l2)">0</div><div class="stat-label">L2 sans binôme</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Résultats</div>
+          <div class="scrollable" id="pairs-list"></div>
+          <div id="unmatched-section"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMÈTRES -->
+    <div class="panel" id="panel-parametres">
+      <div class="card">
+        <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Changer le mot de passe admin</div>
+        <div class="field"><label>Mot de passe actuel</label><input type="password" id="pwdActuel" placeholder="Mot de passe actuel"></div>
+        <div class="field"><label>Nouveau mot de passe</label><input type="password" id="pwdNouveau" placeholder="Min. 6 caractères"></div>
+        <div class="field"><label>Confirmer</label><input type="password" id="pwdConfirm" placeholder="Répéter le nouveau mot de passe"></div>
+        <div class="btn-row"><button class="btn btn-primary" onclick="changerMotDePasse()">🔒 Changer</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="dot" style="background:var(--l1)"></div>Zone dangereuse</div>
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="viderListe()">🗑 Effacer tous les étudiants</button>
+          <button class="btn btn-danger" onclick="reinitJumelage()">🔄 Réinitialiser jumelage</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, remove, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHOPejlHwDUZpwW-EVEIy41pGOoscB4qs",
+    authDomain: "jumelage-l1-l2.firebaseapp.com",
+    databaseURL: "https://jumelage-l1-l2-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "jumelage-l1-l2",
+    storageBucket: "jumelage-l1-l2.firebasestorage.app",
+    messagingSenderId: "374198147269",
+    appId: "1:374198147269:web:66542058a905bf952df8ac"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Écoute temps réel
+  window._startListen = () => {
+    const dbRef = ref(db, 'etudiants');
+    onValue(dbRef, (snapshot) => {
+      const data = snapshot.val();
+      const list = data ? Object.entries(data).map(([key, val]) => ({ ...val, _key: key })) : [];
+      window._etudiants = list;
+      if (window._onEtudiantsUpdate) window._onEtudiantsUpdate(list);
+    });
+  };
+
+  // Supprimer un étudiant
+  window._deleteEtudiant = async (key) => {
+    const dbRef = ref(db, `etudiants/${key}`);
+    await remove(dbRef);
+  };
+
+  // Vider tout
+  window._clearAll = async () => {
+    const dbRef = ref(db, 'etudiants');
+    await remove(dbRef);
+  };
+</script>
+
+<script>
+  // ======= MOT DE PASSE =======
+  const DEFAULT_PWD = 'admin2024';
+  function getPwd() { return localStorage.getItem('jumelage_admin_pwd') || DEFAULT_PWD; }
+
+  function connexion() {
+    const input = document.getElementById('pwdInput').value;
+    if (input === getPwd()) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      sessionStorage.setItem('jumelage_auth', '1');
+      document.getElementById('pwdInput').value = '';
+      demarrer();
+    } else {
+      const el = document.getElementById('pwdInput');
+      el.classList.add('shake');
+      setTimeout(() => el.classList.remove('shake'), 400);
+      document.getElementById('loginError').textContent = '❌ Mot de passe incorrect.';
+      setTimeout(() => document.getElementById('loginError').textContent = '', 2500);
+    }
+  }
+
+  function deconnexion() {
+    sessionStorage.removeItem('jumelage_auth');
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+
+  function togglePwd() {
+    const i = document.getElementById('pwdInput');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  }
+
+  function changerMotDePasse() {
+    const actuel = document.getElementById('pwdActuel').value;
+    const nouveau = document.getElementById('pwdNouveau').value;
+    const confirm = document.getElementById('pwdConfirm').value;
+    if (actuel !== getPwd()) { showToast('Mot de passe actuel incorrect.', 'error'); return; }
+    if (nouveau.length < 6) { showToast('Minimum 6 caractères requis.', 'error'); return; }
+    if (nouveau !== confirm) { showToast('Les mots de passe ne correspondent pas.', 'error'); return; }
+    localStorage.setItem('jumelage_admin_pwd', nouveau);
+    ['pwdActuel','pwdNouveau','pwdConfirm'].forEach(id => document.getElementById(id).value = '');
+    showToast('✅ Mot de passe mis à jour !', 'success');
+  }
+
+  // ======= TABS =======
+  function switchTab(tab) {
+    ['etudiants','jumelage','parametres'].forEach((t, i) => {
+      document.querySelectorAll('.tab')[i].classList.toggle('active', t === tab);
+      document.getElementById('panel-'+t).classList.toggle('active', t === tab);
+    });
+  }
+
+  // ======= DONNÉES FIREBASE =======
+  window._etudiants = [];
+
+  function demarrer() {
+    window._onEtudiantsUpdate = renderEtudiants;
+    if (window._startListen) window._startListen();
+    else {
+      // Attendre que le module Firebase soit prêt
+      setTimeout(() => {
+        if (window._startListen) window._startListen();
+      }, 800);
+    }
+  }
+
+  function renderEtudiants(list) {
+    const etudiants = list || window._etudiants;
+    const l1 = etudiants.filter(e => e.niveau === 'L1');
+    const l2 = etudiants.filter(e => e.niveau === 'L2');
+
+    document.getElementById('stat-total').textContent = etudiants.length;
+    document.getElementById('stat-l1').textContent = l1.length;
+    document.getElementById('stat-l2').textContent = l2.length;
+    document.getElementById('chip-l1').textContent = l1.length;
+    document.getElementById('chip-l2').textContent = l2.length;
+
+    renderList('list-l1', l1, 'l1');
+    renderList('list-l2', l2, 'l2');
+  }
+
+  function renderList(containerId, students, level) {
+    const container = document.getElementById(containerId);
+    if (!students.length) {
+      container.innerHTML = `<div class="empty-state">Aucun étudiant ${level.toUpperCase()}</div>`;
+      return;
+    }
+    container.innerHTML = students.map(e => `
+      <div class="student-item">
+        <div class="avatar avatar-${level}">${e.prenom[0]}${e.nom[0]}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="student-name">${e.prenom} ${e.nom}</div>
+          <div class="student-phone">📞 ${e.telephone}</div>
+          ${e.date ? `<div class="student-date">🕐 ${e.date}</div>` : ''}
+        </div>
+        <button class="btn-del" onclick="supprimerEtudiant('${e._key}')" title="Supprimer">✕</button>
+      </div>
+    `).join('');
+  }
+
+  async function supprimerEtudiant(key) {
+    try {
+      await window._deleteEtudiant(key);
+      showToast('Étudiant supprimé', 'success');
+    } catch(e) {
+      showToast('Erreur lors de la suppression.', 'error');
+    }
+  }
+
+  async function viderListe() {
+    if (!confirm('Effacer TOUS les étudiants de Firebase ? Irréversible.')) return;
+    try {
+      await window._clearAll();
+      showToast('Liste vidée', 'success');
+    } catch(e) {
+      showToast('Erreur lors de la suppression.', 'error');
+    }
+  }
+
+  // ======= JUMELAGE =======
+  let paires = [];
+
+  function lancerJumelage() {
+    const etudiants = window._etudiants;
+    const l1 = [...etudiants.filter(e => e.niveau === 'L1')];
+    const l2 = [...etudiants.filter(e => e.niveau === 'L2')];
+
+    if (!l1.length || !l2.length) { showToast('Il faut au moins un étudiant dans chaque promo.', 'error'); return; }
+
+    shuffle(l1); shuffle(l2);
+    paires = [];
+    const min = Math.min(l1.length, l2.length);
+    for (let i = 0; i < min; i++) paires.push({ l1: l1[i], l2: l2[i] });
+
+    const uL1 = l1.slice(min), uL2 = l2.slice(min);
+
+    document.getElementById('jumelage-results').style.display = 'block';
+    document.getElementById('pairs-count').textContent = paires.length;
+    document.getElementById('unmatched-l1').textContent = uL1.length;
+    document.getElementById('unmatched-l2').textContent = uL2.length;
+
+    document.getElementById('pairs-list').innerHTML = paires.map((p, i) => `
+      <div class="pair-card" style="animation-delay:${i*.04}s">
+        <div class="pair-number">#${String(i+1).padStart(2,'0')}</div>
+        <div class="pair-students">
+          <div class="pair-student">
+            <div class="avatar avatar-l1" style="width:28px;height:28px;font-size:11px">${p.l1.prenom[0]}${p.l1.nom[0]}</div>
+            <div><div class="pair-name">${p.l1.prenom} ${p.l1.nom}</div><div class="pair-contact" style="color:var(--l1)">L1 · ${p.l1.telephone}</div></div>
+          </div>
+          <span style="color:var(--muted);font-size:18px;flex-shrink:0">⇄</span>
+          <div class="pair-student">
+            <div class="avatar avatar-l2" style="width:28px;height:28px;font-size:11px">${p.l2.prenom[0]}${p.l2.nom[0]}</div>
+            <div><div class="pair-name">${p.l2.prenom} ${p.l2.nom}</div><div class="pair-contact" style="color:var(--l2)">L2 · ${p.l2.telephone}</div></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    let unmHtml = '';
+    if (uL1.length) unmHtml += `<div class="unmatched-note">⚠ ${uL1.length} L1 sans binôme : ${uL1.map(e=>`${e.prenom} ${e.nom}`).join(', ')}</div>`;
+    if (uL2.length) unmHtml += `<div class="unmatched-note" style="margin-top:8px">⚠ ${uL2.length} L2 sans binôme : ${uL2.map(e=>`${e.prenom} ${e.nom}`).join(', ')}</div>`;
+    document.getElementById('unmatched-section').innerHTML = unmHtml;
+
+    showToast(`🔗 ${paires.length} paire(s) créée(s) !`, 'success');
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+  }
+
+  function reinitJumelage() { paires = []; document.getElementById('jumelage-results').style.display = 'none'; }
+
+  function exporterJumelage() {
+    if (!paires.length) { showToast('Lancez d\'abord le jumelage.', 'error'); return; }
+    const rows = ['Paire,L1 Nom,L1 Prénom,L1 Téléphone,L2 Nom,L2 Prénom,L2 Téléphone'];
+    paires.forEach((p,i) => rows.push(`${i+1},${p.l1.nom},${p.l1.prenom},${p.l1.telephone},${p.l2.nom},${p.l2.prenom},${p.l2.telephone}`));
+    telecharger(rows.join('\n'), 'jumelage.csv');
+  }
+
+  function exporterEtudiants() {
+    const list = window._etudiants;
+    if (!list.length) { showToast('Aucun étudiant à exporter.', 'error'); return; }
+    const rows = ['Nom,Prénom,Téléphone,Niveau,Date'];
+    list.forEach(e => rows.push(`${e.nom},${e.prenom},${e.telephone},${e.niveau},${e.date||''}`));
+    telecharger(rows.join('\n'), 'etudiants.csv');
+  }
+
+  function telecharger(csv, nom) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+    a.download = nom; a.click();
+    showToast('📤 Export téléchargé', 'success');
+  }
+
+  // ======= UTILS =======
+  function showToast(message, type='success') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span>${type==='success'?'✅':'❌'}</span> ${message}`;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  // ======= AUTO-LOGIN =======
+  if (sessionStorage.getItem('jumelage_auth') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    setTimeout(demarrer, 500);
+  }
+</script>
+</body>
+</html>
