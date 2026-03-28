@@ -10,6 +10,7 @@
     --bg: #0a0a0f; --surface: #13131a; --card: #1a1a24; --border: #2a2a3a;
     --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
     --text: #e8e8f0; --muted: #7a7a9a; --l1: #ff6584; --l2: #6c63ff;
+    --wa: #25d366;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
@@ -28,11 +29,9 @@
   .login-field input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 48px 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color .2s, box-shadow .2s; letter-spacing: 3px; text-align: center; }
   .login-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
   .login-field input.shake { animation: shake .3s ease; border-color: var(--l1); }
-  .toggle-pwd { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; }
   .login-error { color: var(--l1); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
   .btn-login { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; }
   .btn-login:hover { background: #7c74ff; box-shadow: 0 8px 24px rgba(108,99,255,.4); }
-  .login-hint { margin-top: 16px; font-size: 12px; color: var(--muted); }
 
   /* MAIN */
   #mainApp { display: none; }
@@ -40,12 +39,10 @@
   .topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex: 1; }
   .admin-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(108,99,255,.2); color: var(--accent); font-weight: 600; }
 
-  /* Indicateur temps réel */
   .live-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--accent3); background: rgba(67,233,123,.1); border: 1px solid rgba(67,233,123,.2); padding: 4px 10px; border-radius: 20px; }
   .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent3); animation: pulse 1.5s infinite; }
 
   .btn-logout { background: rgba(255,101,132,.12); border: 1px solid rgba(255,101,132,.2); color: var(--l1); padding: 7px 14px; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s; }
-  .btn-logout:hover { background: rgba(255,101,132,.2); }
 
   .wrapper { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 36px 24px 80px; }
 
@@ -58,7 +55,6 @@
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; margin-bottom: 18px; }
   .card-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; }
 
   .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
   .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
@@ -69,65 +65,49 @@
   .level-header { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .count-chip { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
 
-  .student-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface); margin-bottom: 6px; font-size: 13px; animation: fadeUp .3s ease both; transition: background .15s; }
-  .student-item:hover { background: #20202e; }
+  .student-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface); margin-bottom: 6px; font-size: 13px; animation: fadeUp .3s ease both; }
   .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
   .avatar-l1 { background: rgba(255,101,132,.2); color: var(--l1); }
   .avatar-l2 { background: rgba(108,99,255,.2); color: var(--l2); }
-  .student-name { font-weight: 500; }
-  .student-phone { font-size: 11px; color: var(--muted); }
-  .student-date { font-size: 10px; color: var(--muted); opacity: .7; }
-  .btn-del { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 6px; border-radius: 6px; transition: all .15s; flex-shrink: 0; }
-  .btn-del:hover { color: var(--l1); background: rgba(255,101,132,.1); }
-  .empty-state { text-align: center; color: var(--muted); font-size: 14px; padding: 32px 0; }
-  .scrollable { max-height: 380px; overflow-y: auto; padding-right: 4px; }
-  .scrollable::-webkit-scrollbar { width: 4px; }
-  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-  .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-  label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
-  input[type=text], input[type=url], textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; width: 100%; }
-  input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
-  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .5; }
 
   .btn { padding: 11px 22px; border-radius: 10px; border: none; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #7c74ff; transform: translateY(-1px); }
   .btn-success { background: var(--accent3); color: #000; }
-  .btn-success:hover { opacity: .9; transform: translateY(-1px); }
   .btn-danger { background: rgba(255,101,132,.15); color: var(--l1); border: 1px solid rgba(255,101,132,.3); }
-  .btn-danger:hover { background: rgba(255,101,132,.25); }
   .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--muted); }
-  .btn:active { transform: scale(.98); }
-  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  
+  /* WHATSAPP BUTTONS & DISABLED STATE */
+  .btn-wa { background: rgba(37, 211, 102, 0.12); color: var(--wa); border: 1px solid rgba(37, 211, 102, 0.25); padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; transition: all .2s; cursor: pointer; }
+  .btn-wa:hover:not(.sent) { background: var(--wa); color: #fff; transform: translateY(-1px); }
+  
+  /* Nouveau style pour les boutons déjà cliqués */
+  .btn-wa.sent { 
+    background: rgba(255, 255, 255, 0.05); 
+    color: var(--muted); 
+    border-color: transparent; 
+    cursor: not-allowed; 
+    pointer-events: none; 
+    box-shadow: none;
+  }
 
-  .pair-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; animation: fadeUp .4s ease both; transition: border-color .2s; }
-  .pair-card:hover { border-color: rgba(108,99,255,.3); }
-  .pair-number { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; color: var(--muted); width: 28px; text-align: center; flex-shrink: 0; }
-  .pair-students { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap; }
-  .pair-student { display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 10px; padding: 8px 12px; flex: 1; min-width: 140px; }
-  .pair-name { font-size: 13px; font-weight: 500; }
-  .pair-contact { font-size: 11px; }
-  .unmatched-note { background: rgba(255,101,132,.08); border: 1px solid rgba(255,101,132,.2); border-radius: 10px; padding: 14px; font-size: 13px; color: var(--l1); margin-top: 12px; line-height: 1.6; }
-  .info-box { background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.2); border-radius: 12px; padding: 14px; font-size: 13px; color: #a8a0ff; line-height: 1.6; margin-bottom: 16px; }
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .pair-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 18px; animation: fadeUp .4s ease both; }
+  .pair-header { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 14px; }
+  .pair-student { display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 10px; padding: 8px 12px; flex: 1; }
+  
+  .filleuls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; padding-left: 30px; }
+  .filleul-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 8px 12px; border: 1px solid var(--border); }
 
+  .scrollable { max-height: 380px; overflow-y: auto; }
   .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
-  .toast { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,.5); animation: slideIn .3s ease; min-width: 260px; }
-  .toast.success { border-color: rgba(67,233,123,.3); }
-  .toast.error { border-color: rgba(255,101,132,.3); }
+  .toast { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,.5); animation: slideIn .3s ease; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
-  @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
 
   @media (max-width: 600px) {
     .students-grid { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-    .card { padding: 18px 14px; }
-    .topbar { padding: 12px 16px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .filleuls-grid { padding-left: 0; }
   }
 </style>
 </head>
@@ -136,130 +116,74 @@
 <div class="glow glow-2"></div>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- LOGIN -->
 <div id="loginScreen">
-  <div class="glow glow-1"></div>
   <div class="login-box">
     <div class="lock-icon">🔐</div>
-    <h2>Espace Administrateur</h2>
-    <p>Réservé à l'administration.<br>Saisissez votre mot de passe.</p>
-    <div class="login-field">
-      <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') connexion()">
-      <button class="toggle-pwd" onclick="togglePwd()">👁</button>
-    </div>
+    <h2>Espace Admin</h2>
+    <p>Commission Sociale — Club Informatique</p>
+    <div class="login-field"><input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') connexion()"></div>
     <div class="login-error" id="loginError"></div>
     <button class="btn-login" onclick="connexion()">Accéder →</button>
-    <p class="login-hint">Mot de passe par défaut : <strong>admin2024</strong></p>
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="mainApp">
   <div class="topbar">
-    <div class="topbar-title">
-      🔗 Jumelage L1 × L2
-      <span class="admin-badge">ADMIN</span>
-    </div>
-    <div class="live-badge">
-      <span class="live-dot"></span> Temps réel
-    </div>
+    <div class="topbar-title">🔗 Jumelage <span class="admin-badge">ADMIN</span></div>
+    <div class="live-badge"><span class="live-dot"></span> Temps réel</div>
     <button class="btn-logout" onclick="deconnexion()">Déconnexion</button>
   </div>
 
   <div class="wrapper">
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('etudiants')">👥 Étudiants</button>
+      <button class="tab active" onclick="switchTab('etudiants')">👥 Liste</button>
       <button class="tab" onclick="switchTab('jumelage')">🔗 Jumelage</button>
       <button class="tab" onclick="switchTab('parametres')">⚙️ Paramètres</button>
     </div>
 
-    <!-- ÉTUDIANTS -->
     <div class="panel active" id="panel-etudiants">
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-value" id="stat-total" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0</div>
-          <div class="stat-label">Total inscrits</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-l1" style="color:var(--l1)">0</div>
-          <div class="stat-label">Étudiants L1</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-l2" style="color:var(--l2)">0</div>
-          <div class="stat-label">Étudiants L2</div>
-        </div>
+        <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-l1" style="color:var(--l1)">0</div><div class="stat-label">Filleuls L1</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-l2" style="color:var(--l2)">0</div><div class="stat-label">Parrains L2</div></div>
       </div>
       <div class="card">
-        <div class="card-title">
-          <div class="dot" style="background:var(--accent)"></div>
-          Liste des étudiants inscrits
-          <div style="margin-left:auto;display:flex;gap:10px;">
-            <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="exporterEtudiants()">📤 Export CSV</button>
-            <button class="btn btn-danger" style="padding:7px 12px;font-size:12px;" onclick="viderListe()">🗑 Vider</button>
-          </div>
-        </div>
         <div class="students-grid">
           <div>
-            <div class="level-header" style="color:var(--l1)">Licence 1 <span class="count-chip" id="chip-l1" style="background:rgba(255,101,132,.15);color:var(--l1)">0</span></div>
-            <div class="scrollable" id="list-l1"><div class="empty-state">Chargement…</div></div>
+            <div class="level-header" style="color:var(--l1)">Licence 1 <span class="count-chip" id="chip-l1">0</span></div>
+            <div class="scrollable" id="list-l1"></div>
           </div>
           <div>
-            <div class="level-header" style="color:var(--l2)">Licence 2 <span class="count-chip" id="chip-l2" style="background:rgba(108,99,255,.15);color:var(--l2)">0</span></div>
-            <div class="scrollable" id="list-l2"><div class="empty-state">Chargement…</div></div>
+            <div class="level-header" style="color:var(--l2)">Licence 2 <span class="count-chip" id="chip-l2">0</span></div>
+            <div class="scrollable" id="list-l2"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- JUMELAGE -->
     <div class="panel" id="panel-jumelage">
       <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Lancer le Jumelage</div>
-        <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px;">Associe chaque L1 avec un L2 de façon aléatoire. Les étudiants sans binôme sont signalés.</p>
+        <div class="card-title">🚀 Lancement de l'Algorithme</div>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Répartition équitable (1 parrain pour 3-4 filleuls). Les notifications WhatsApp sont prêtes après calcul.</p>
         <div class="btn-row">
-          <button class="btn btn-success" onclick="lancerJumelage()" style="font-size:15px;padding:14px 26px;">🔗 Lancer le Jumelage</button>
-          <button class="btn btn-ghost" onclick="exporterJumelage()">📤 Exporter CSV</button>
-          <button class="btn btn-danger" onclick="reinitJumelage()">🔄 Réinitialiser</button>
+          <button class="btn btn-success" onclick="lancerJumelage()">🔗 Lancer le Jumelage</button>
+          <button class="btn btn-ghost" onclick="exporterJumelage()">📤 Export CSV</button>
         </div>
       </div>
       <div id="jumelage-results" style="display:none;">
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-value" id="pairs-count" style="color:var(--accent3)">0</div><div class="stat-label">Paires créées</div></div>
-          <div class="stat-card"><div class="stat-value" id="unmatched-l1" style="color:var(--l1)">0</div><div class="stat-label">L1 sans binôme</div></div>
-          <div class="stat-card"><div class="stat-value" id="unmatched-l2" style="color:var(--l2)">0</div><div class="stat-label">L2 sans binôme</div></div>
-        </div>
-        <div class="card">
-          <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Résultats</div>
-          <div class="scrollable" id="pairs-list"></div>
-          <div id="unmatched-section"></div>
-        </div>
+        <div id="pairs-list"></div>
       </div>
     </div>
 
-    <!-- PARAMÈTRES -->
     <div class="panel" id="panel-parametres">
-      <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Changer le mot de passe admin</div>
-        <div class="field"><label>Mot de passe actuel</label><input type="password" id="pwdActuel" placeholder="Mot de passe actuel"></div>
-        <div class="field"><label>Nouveau mot de passe</label><input type="password" id="pwdNouveau" placeholder="Min. 6 caractères"></div>
-        <div class="field"><label>Confirmer</label><input type="password" id="pwdConfirm" placeholder="Répéter le nouveau mot de passe"></div>
-        <div class="btn-row"><button class="btn btn-primary" onclick="changerMotDePasse()">🔒 Changer</button></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--l1)"></div>Zone dangereuse</div>
-        <div class="btn-row">
-          <button class="btn btn-danger" onclick="viderListe()">🗑 Effacer tous les étudiants</button>
-          <button class="btn btn-danger" onclick="reinitJumelage()">🔄 Réinitialiser jumelage</button>
-        </div>
-      </div>
+      <div class="card"><button class="btn btn-danger" onclick="viderListe()">🗑 Effacer toute la base</button></div>
     </div>
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, remove, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCHOPejlHwDUZpwW-EVEIy41pGOoscB4qs",
@@ -274,38 +198,20 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Écoute temps réel
   window._startListen = () => {
-    const dbRef = ref(db, 'etudiants');
-    onValue(dbRef, (snapshot) => {
-      const data = snapshot.val();
-      const list = data ? Object.entries(data).map(([key, val]) => ({ ...val, _key: key })) : [];
-      window._etudiants = list;
-      if (window._onEtudiantsUpdate) window._onEtudiantsUpdate(list);
+    onValue(ref(db, 'etudiants'), (snap) => {
+      const data = snap.val();
+      window._etudiants = data ? Object.entries(data).map(([k, v]) => ({ ...v, _key: k })) : [];
+      if (window._onEtudiantsUpdate) window._onEtudiantsUpdate(window._etudiants);
     });
   };
-
-  // Supprimer un étudiant
-  window._deleteEtudiant = async (key) => {
-    const dbRef = ref(db, `etudiants/${key}`);
-    await remove(dbRef);
-  };
-
-  // Vider tout
-  window._clearAll = async () => {
-    const dbRef = ref(db, 'etudiants');
-    await remove(dbRef);
-  };
+  window._clearAll = () => remove(ref(db, 'etudiants'));
 </script>
 
 <script>
-  // ======= MOT DE PASSE =======
-  const DEFAULT_PWD = 'admin2024';
-  function getPwd() { return localStorage.getItem('jumelage_admin_pwd') || DEFAULT_PWD; }
-
+  // LOGIN / DECONNEXION
   function connexion() {
-    const input = document.getElementById('pwdInput').value;
-    if (input === getPwd()) {
+    if (document.getElementById('pwdInput').value === 'admin2024') {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
       sessionStorage.setItem('jumelage_auth', '1');
@@ -326,187 +232,155 @@
     document.getElementById('loginScreen').style.display = 'flex';
   }
 
-  function togglePwd() {
-    const i = document.getElementById('pwdInput');
-    i.type = i.type === 'password' ? 'text' : 'password';
-  }
-
-  function changerMotDePasse() {
-    const actuel = document.getElementById('pwdActuel').value;
-    const nouveau = document.getElementById('pwdNouveau').value;
-    const confirm = document.getElementById('pwdConfirm').value;
-    if (actuel !== getPwd()) { showToast('Mot de passe actuel incorrect.', 'error'); return; }
-    if (nouveau.length < 6) { showToast('Minimum 6 caractères requis.', 'error'); return; }
-    if (nouveau !== confirm) { showToast('Les mots de passe ne correspondent pas.', 'error'); return; }
-    localStorage.setItem('jumelage_admin_pwd', nouveau);
-    ['pwdActuel','pwdNouveau','pwdConfirm'].forEach(id => document.getElementById(id).value = '');
-    showToast('✅ Mot de passe mis à jour !', 'success');
-  }
-
-  // ======= TABS =======
-  function switchTab(tab) {
-    ['etudiants','jumelage','parametres'].forEach((t, i) => {
-      document.querySelectorAll('.tab')[i].classList.toggle('active', t === tab);
-      document.getElementById('panel-'+t).classList.toggle('active', t === tab);
-    });
-  }
-
-  // ======= DONNÉES FIREBASE =======
-  window._etudiants = [];
-
+  // INITIALISATION
   function demarrer() {
     window._onEtudiantsUpdate = renderEtudiants;
-    if (window._startListen) window._startListen();
-    else {
-      // Attendre que le module Firebase soit prêt
-      setTimeout(() => {
-        if (window._startListen) window._startListen();
-      }, 800);
-    }
+    setTimeout(() => { if(window._startListen) window._startListen(); }, 500);
   }
 
+  // GESTION DES LISTES
   function renderEtudiants(list) {
-    const etudiants = list || window._etudiants;
-    const l1 = etudiants.filter(e => e.niveau === 'L1');
-    const l2 = etudiants.filter(e => e.niveau === 'L2');
-
-    document.getElementById('stat-total').textContent = etudiants.length;
+    const l1 = list.filter(e => e.niveau === 'L1');
+    const l2 = list.filter(e => e.niveau === 'L2');
+    document.getElementById('stat-total').textContent = list.length;
     document.getElementById('stat-l1').textContent = l1.length;
     document.getElementById('stat-l2').textContent = l2.length;
     document.getElementById('chip-l1').textContent = l1.length;
     document.getElementById('chip-l2').textContent = l2.length;
-
     renderList('list-l1', l1, 'l1');
     renderList('list-l2', l2, 'l2');
   }
 
-  function renderList(containerId, students, level) {
-    const container = document.getElementById(containerId);
-    if (!students.length) {
-      container.innerHTML = `<div class="empty-state">Aucun étudiant ${level.toUpperCase()}</div>`;
+  function renderList(id, data, lvl) {
+    if (!data.length) {
+      document.getElementById(id).innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px">Aucun étudiant</div>`;
       return;
     }
-    container.innerHTML = students.map(e => `
+    document.getElementById(id).innerHTML = data.map(e => `
       <div class="student-item">
-        <div class="avatar avatar-${level}">${e.prenom[0]}${e.nom[0]}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="student-name">${e.prenom} ${e.nom}</div>
-          <div class="student-phone">📞 ${e.telephone}</div>
-          ${e.date ? `<div class="student-date">🕐 ${e.date}</div>` : ''}
-        </div>
-        <button class="btn-del" onclick="supprimerEtudiant('${e._key}')" title="Supprimer">✕</button>
+        <div class="avatar avatar-${lvl}">${e.prenom[0]}</div>
+        <div style="flex:1"><b>${e.prenom} ${e.nom}</b><br><small>${e.telephone}</small></div>
       </div>
     `).join('');
-  }
-
-  async function supprimerEtudiant(key) {
-    try {
-      await window._deleteEtudiant(key);
-      showToast('Étudiant supprimé', 'success');
-    } catch(e) {
-      showToast('Erreur lors de la suppression.', 'error');
-    }
   }
 
   async function viderListe() {
-    if (!confirm('Effacer TOUS les étudiants de Firebase ? Irréversible.')) return;
+    if (!confirm('Attention : Effacer TOUS les étudiants de la base de données ? C\'est irréversible.')) return;
     try {
       await window._clearAll();
-      showToast('Liste vidée', 'success');
+      showToast('Base de données vidée avec succès.');
     } catch(e) {
-      showToast('Erreur lors de la suppression.', 'error');
+      alert("Erreur lors de la suppression.");
     }
   }
 
-  // ======= JUMELAGE =======
-  let paires = [];
+  // JUMELAGE 1:N
+  let currentGroupes = [];
 
   function lancerJumelage() {
-    const etudiants = window._etudiants;
-    const l1 = [...etudiants.filter(e => e.niveau === 'L1')];
-    const l2 = [...etudiants.filter(e => e.niveau === 'L2')];
+    const l1 = shuffle([...window._etudiants.filter(e => e.niveau === 'L1')]);
+    const l2 = shuffle([...window._etudiants.filter(e => e.niveau === 'L2')]);
+    
+    if(!l1.length || !l2.length) return alert("Il faut au moins un L1 et un L2 dans la base !");
 
-    if (!l1.length || !l2.length) { showToast('Il faut au moins un étudiant dans chaque promo.', 'error'); return; }
-
-    shuffle(l1); shuffle(l2);
-    paires = [];
-    const min = Math.min(l1.length, l2.length);
-    for (let i = 0; i < min; i++) paires.push({ l1: l1[i], l2: l2[i] });
-
-    const uL1 = l1.slice(min), uL2 = l2.slice(min);
+    currentGroupes = l2.map(p => ({ parrain: p, filleuls: [] }));
+    l1.forEach((f, i) => currentGroupes[i % l2.length].filleuls.push(f));
 
     document.getElementById('jumelage-results').style.display = 'block';
-    document.getElementById('pairs-count').textContent = paires.length;
-    document.getElementById('unmatched-l1').textContent = uL1.length;
-    document.getElementById('unmatched-l2').textContent = uL2.length;
+    const container = document.getElementById('pairs-list');
+    
+    container.innerHTML = currentGroupes.map((g, i) => {
+      // Vérification spécifique pour Mamadou Sy
+      const isMamadouSy = g.parrain.prenom.trim().toLowerCase() === 'mamadou' && g.parrain.nom.trim().toLowerCase() === 'sy';
+      const btnClass = isMamadouSy ? 'btn-wa sent' : 'btn-wa';
+      const btnText = isMamadouSy ? '✓ Déjà informé' : '📱 Informer Parrain';
+      const btnClick = isMamadouSy ? '' : `onclick="notifierParrain(${i}, this)"`;
 
-    document.getElementById('pairs-list').innerHTML = paires.map((p, i) => `
-      <div class="pair-card" style="animation-delay:${i*.04}s">
-        <div class="pair-number">#${String(i+1).padStart(2,'0')}</div>
-        <div class="pair-students">
-          <div class="pair-student">
-            <div class="avatar avatar-l1" style="width:28px;height:28px;font-size:11px">${p.l1.prenom[0]}${p.l1.nom[0]}</div>
-            <div><div class="pair-name">${p.l1.prenom} ${p.l1.nom}</div><div class="pair-contact" style="color:var(--l1)">L1 · ${p.l1.telephone}</div></div>
-          </div>
-          <span style="color:var(--muted);font-size:18px;flex-shrink:0">⇄</span>
-          <div class="pair-student">
-            <div class="avatar avatar-l2" style="width:28px;height:28px;font-size:11px">${p.l2.prenom[0]}${p.l2.nom[0]}</div>
-            <div><div class="pair-name">${p.l2.prenom} ${p.l2.nom}</div><div class="pair-contact" style="color:var(--l2)">L2 · ${p.l2.telephone}</div></div>
+      return `
+      <div class="pair-card">
+        <div class="pair-header">
+          <div class="pair-student" style="background: rgba(108,99,255,0.08);">
+            <div class="avatar avatar-l2">${g.parrain.prenom[0]}</div>
+            <div style="flex:1"><b>${g.parrain.prenom} ${g.parrain.nom} (Parrain L2)</b><br><small>${g.parrain.telephone}</small></div>
+            <button class="${btnClass}" ${btnClick}>${btnText}</button>
           </div>
         </div>
+        <div class="filleuls-grid">
+          ${g.filleuls.map((f, fi) => `
+            <div class="filleul-item">
+              <div class="avatar avatar-l1" style="width:24px;height:24px;font-size:10px">${f.prenom[0]}</div>
+              <div style="flex:1; font-size:12px"><b>${f.prenom} ${f.nom}</b></div>
+              <button class="btn-wa" style="padding:4px 6px" title="Informer ce filleul" onclick="notifierFilleul(${i}, ${fi}, this)">📱</button>
+            </div>
+          `).join('')}
+        </div>
       </div>
-    `).join('');
-
-    let unmHtml = '';
-    if (uL1.length) unmHtml += `<div class="unmatched-note">⚠ ${uL1.length} L1 sans binôme : ${uL1.map(e=>`${e.prenom} ${e.nom}`).join(', ')}</div>`;
-    if (uL2.length) unmHtml += `<div class="unmatched-note" style="margin-top:8px">⚠ ${uL2.length} L2 sans binôme : ${uL2.map(e=>`${e.prenom} ${e.nom}`).join(', ')}</div>`;
-    document.getElementById('unmatched-section').innerHTML = unmHtml;
-
-    showToast(`🔗 ${paires.length} paire(s) créée(s) !`, 'success');
+    `}).join('');
+    showToast("Algorithme terminé !");
   }
 
-  function shuffle(arr) {
-    for (let i = arr.length-1; i>0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
+  // WHATSAPP FUNCTIONS
+  function notifierParrain(idx, btnElement) {
+    const g = currentGroupes[idx];
+    const listeFilleuls = g.filleuls.map(f => `- ${f.prenom} ${f.nom} (${f.telephone})`).join('%0A');
+    const msg = `Salut ${g.parrain.prenom}, voici tes ${g.filleuls.length} filleuls :%0A${listeFilleuls}%0AÀ toi de créer le groupe !`;
+    
+    // Ouvre WhatsApp
+    window.open(`https://wa.me/${formatTel(g.parrain.telephone)}?text=${msg}`);
+    
+    // Change l'état du bouton pour bloquer les futurs clics
+    btnElement.className = 'btn-wa sent';
+    btnElement.innerText = '✓ Envoyé';
+    btnElement.onclick = null; 
   }
 
-  function reinitJumelage() { paires = []; document.getElementById('jumelage-results').style.display = 'none'; }
+  function notifierFilleul(gIdx, fIdx, btnElement) {
+    const p = currentGroupes[gIdx].parrain;
+    const f = currentGroupes[gIdx].filleuls[fIdx];
+    const msg = `Salut ${f.prenom}, ton parrain est ${p.prenom} ${p.nom}. Voici son numéro : ${p.telephone}. Contacte-le pour ton intégration !`;
+    
+    // Ouvre WhatsApp
+    window.open(`https://wa.me/${formatTel(f.telephone)}?text=${msg}`);
 
+    // Change l'état du bouton
+    btnElement.className = 'btn-wa sent';
+    btnElement.innerText = '✓';
+    btnElement.onclick = null;
+  }
+
+  // EXPORT CSV
   function exporterJumelage() {
-    if (!paires.length) { showToast('Lancez d\'abord le jumelage.', 'error'); return; }
-    const rows = ['Paire,L1 Nom,L1 Prénom,L1 Téléphone,L2 Nom,L2 Prénom,L2 Téléphone'];
-    paires.forEach((p,i) => rows.push(`${i+1},${p.l1.nom},${p.l1.prenom},${p.l1.telephone},${p.l2.nom},${p.l2.prenom},${p.l2.telephone}`));
-    telecharger(rows.join('\n'), 'jumelage.csv');
-  }
-
-  function exporterEtudiants() {
-    const list = window._etudiants;
-    if (!list.length) { showToast('Aucun étudiant à exporter.', 'error'); return; }
-    const rows = ['Nom,Prénom,Téléphone,Niveau,Date'];
-    list.forEach(e => rows.push(`${e.nom},${e.prenom},${e.telephone},${e.niveau},${e.date||''}`));
-    telecharger(rows.join('\n'), 'etudiants.csv');
-  }
-
-  function telecharger(csv, nom) {
+    if (!currentGroupes.length) { alert('Lancez d\'abord le jumelage !'); return; }
+    const rows = ['Groupe,Parrain Nom,Parrain Prénom,Parrain Téléphone,Filleul Nom,Filleul Prénom,Filleul Téléphone'];
+    currentGroupes.forEach((groupe, i) => {
+      groupe.filleuls.forEach(filleul => {
+        rows.push(`${i+1},${groupe.parrain.nom},${groupe.parrain.prenom},${groupe.parrain.telephone},${filleul.nom},${filleul.prenom},${filleul.telephone}`);
+      });
+    });
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
-    a.download = nom; a.click();
-    showToast('📤 Export téléchargé', 'success');
+    a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8;'}));
+    a.download = 'Resultats_Jumelage.csv'; a.click();
+    showToast('📤 Export téléchargé');
   }
 
-  // ======= UTILS =======
-  function showToast(message, type='success') {
-    const c = document.getElementById('toastContainer');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<span>${type==='success'?'✅':'❌'}</span> ${message}`;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
+  // UTILS
+  function formatTel(t) { return t.replace(/\D/g, ''); }
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  
+  function switchTab(t) {
+    ['etudiants','jumelage','parametres'].forEach(id => {
+      document.getElementById('panel-'+id).classList.toggle('active', id===t);
+      document.querySelectorAll('.tab')[['etudiants','jumelage','parametres'].indexOf(id)].classList.toggle('active', id===t);
+    });
   }
 
-  // ======= AUTO-LOGIN =======
+  function showToast(m) {
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = "✅ " + m;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // AUTO-LOGIN SI DEJA CONNECTE
   if (sessionStorage.getItem('jumelage_auth') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
